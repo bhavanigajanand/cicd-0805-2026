@@ -1,0 +1,63 @@
+# ─────────────────────────────────────────
+# Terraform sensitive files
+# ─────────────────────────────────────────
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/*.tfvars
+terraform/*.tfvars.json
+
+# SSH Private Key — never commit this
+terraform/*.pem
+*.pem
+
+# ─────────────────────────────────────────
+# Environment variables & secrets
+# ─────────────────────────────────────────
+.env
+.env.*
+*.env
+secrets.yml
+secrets.yaml
+secrets.json
+
+# ─────────────────────────────────────────
+# AWS credentials
+# ─────────────────────────────────────────
+.aws/
+credentials
+aws_credentials
+
+# ─────────────────────────────────────────
+# Python
+# ─────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# ─────────────────────────────────────────
+# Docker
+# ─────────────────────────────────────────
+.docker/
+
+# ─────────────────────────────────────────
+# OS files
+# ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─────────────────────────────────────────
+# IDE / Editor
+# ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
