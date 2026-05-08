@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME        = "flask-cicd-app"
-        DOCKERHUB_USER    = "bhavanigajanand" # dockerusername
+        DOCKERHUB_USER    = "bhavanigajanand"
         DOCKERHUB_IMAGE   = "${DOCKERHUB_USER}/${IMAGE_NAME}"
         EC2_USER          = "ec2-user"
         EC2_HOST          = "localhost"  // same EC2, update if deploying remotely
