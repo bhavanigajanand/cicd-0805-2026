@@ -2,7 +2,16 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "flask-cicd-app"
+        IMAGE_NAME        = "flask-cicd-app"
+        DOCKERHUB_USER    = "bhavanigajananad"
+        DOCKERHUB_IMAGE   = "${DOCKERHUB_USER}/${IMAGE_NAME}"
+        EC2_USER          = "ec2-user"
+        EC2_HOST          = "localhost"  // same EC2, update if deploying remotely
+    }
+
+    triggers {
+        // Automatically trigger pipeline on GitHub push via webhook
+        githubPush()
     }
 
     stages {
@@ -10,14 +19,16 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo '📥 Cloning repository...'
-                checkout scm
+                git credentialsId: 'github-credentials',
+                    url: 'https://github.com/bhavanigajanand/cicd-0805-2026.git',
+                    branch: 'main'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo '🔨 Building Docker image...'
-                sh "docker build -t ${IMAGE_NAME}:latest ."
+                sh "docker build -t ${DOCKERHUB_IMAGE}:latest ."
             }
         }
 
@@ -25,11 +36,28 @@ pipeline {
             steps {
                 echo '🧪 Running basic smoke test...'
                 sh """
-                    docker run --rm -d --name test-container -p 5001:5000 ${IMAGE_NAME}:latest
+                    docker run --rm -d --name test-container -p 5001:5000 ${DOCKERHUB_IMAGE}:latest
                     sleep 3
                     curl -f http://localhost:5001 || (docker stop test-container && exit 1)
                     docker stop test-container
                 """
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                echo '📦 Pushing image to Docker Hub...'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push ${DOCKERHUB_IMAGE}:latest
+                        docker logout
+                    """
+                }
             }
         }
 
@@ -51,6 +79,10 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed. Check the logs above.'
+        }
+        always {
+            echo '🧹 Cleaning up dangling Docker images...'
+            sh 'docker image prune -f'
         }
     }
 }
