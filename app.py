@@ -48,7 +48,7 @@ def home():
     </head>
     <body>
         <div class="container">
-            <h1>👋 Hi from Jenkins CI/CD!</h1>
+            <h1>👋 Hello from Jenkins CI/CD!</h1>
             <p>This app was built and deployed automatically.</p>
             <p>Pipeline: <strong>Jenkins</strong> → Docker → AWS EC2</p>
             <div class="badge">🚀 Deployed Successfully</div>
