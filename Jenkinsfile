@@ -36,9 +36,10 @@ pipeline {
             steps {
                 echo '🧪 Running basic smoke test...'
                 sh """
-                    docker run --rm -d --name test-container -p 5001:5000 ${DOCKERHUB_IMAGE}:latest
+                    docker run --rm -d --name test-container ${DOCKERHUB_IMAGE}:latest
                     sleep 3
-                    curl -f http://localhost:5001 || (docker stop test-container && exit 1)
+                    CONTAINER_IP=\$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test-container)
+                    curl -f http://\$CONTAINER_IP:5000 || (docker stop test-container && exit 1)
                     docker stop test-container
                 """
             }
